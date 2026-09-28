@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/daki/Desktop/SEM%202/ML/Assignment/Assignment%202/mlruns/882635767183688311/f555d40080024e68a24d15be0895b47c/artifacts
+end_time: 1788767866265
+entry_point_name: ''
+experiment_id: '882635767183688311'
+lifecycle_stage: active
+run_id: f555d40080024e68a24d15be0895b47c
+run_name: momentum_True
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788767865186
+status: 3
+tags: []
+user_id: daki

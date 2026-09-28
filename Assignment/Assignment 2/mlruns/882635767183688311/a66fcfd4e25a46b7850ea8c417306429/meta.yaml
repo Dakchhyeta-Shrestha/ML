@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/daki/Desktop/SEM%202/ML/Assignment/Assignment%202/mlruns/882635767183688311/a66fcfd4e25a46b7850ea8c417306429/artifacts
+end_time: 1788768800851
+entry_point_name: ''
+experiment_id: '882635767183688311'
+lifecycle_stage: active
+run_id: a66fcfd4e25a46b7850ea8c417306429
+run_name: model_ridge
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788768800089
+status: 3
+tags: []
+user_id: daki

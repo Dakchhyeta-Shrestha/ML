@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/daki/Desktop/SEM%202/ML/Assignment/Assignment%202/mlruns/882635767183688311/6391b91e9f5a40b4aaf0b4fcb2eb3e80/artifacts
+end_time: 1788768841092
+entry_point_name: ''
+experiment_id: '882635767183688311'
+lifecycle_stage: active
+run_id: 6391b91e9f5a40b4aaf0b4fcb2eb3e80
+run_name: method_sto
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788768805938
+status: 3
+tags: []
+user_id: daki

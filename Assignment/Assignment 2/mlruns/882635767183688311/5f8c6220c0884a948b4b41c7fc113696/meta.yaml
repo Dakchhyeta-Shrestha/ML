@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/daki/Desktop/SEM%202/ML/Assignment/Assignment%202/mlruns/882635767183688311/5f8c6220c0884a948b4b41c7fc113696/artifacts
+end_time: 1788767549083
+entry_point_name: ''
+experiment_id: '882635767183688311'
+lifecycle_stage: active
+run_id: 5f8c6220c0884a948b4b41c7fc113696
+run_name: model_lasso
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788767548050
+status: 3
+tags: []
+user_id: daki
