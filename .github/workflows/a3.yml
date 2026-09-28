@@ -1,0 +1,23 @@
+name: Assignment 3 model tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Assignment/Assignment 3/**'
+      - '.github/workflows/a3.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Assignment/Assignment 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q tests
