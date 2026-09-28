@@ -1,0 +1,30 @@
+[
+  {
+    "ridge": false,
+    "lambda": 0.0,
+    "val_accuracy": 0.5907473309608541,
+    "val_macro_f1": 0.5821651801117771,
+    "val_weighted_f1": 0.5827166014601712
+  },
+  {
+    "ridge": true,
+    "lambda": 0.001,
+    "val_accuracy": 0.5987544483985765,
+    "val_macro_f1": 0.5890918448771991,
+    "val_weighted_f1": 0.5896717378767695
+  },
+  {
+    "ridge": true,
+    "lambda": 0.01,
+    "val_accuracy": 0.5845195729537367,
+    "val_macro_f1": 0.5622680609156533,
+    "val_weighted_f1": 0.5633427555649375
+  },
+  {
+    "ridge": true,
+    "lambda": 0.1,
+    "val_accuracy": 0.5169039145907474,
+    "val_macro_f1": 0.44665158014039,
+    "val_weighted_f1": 0.44929771443439115
+  }
+]
