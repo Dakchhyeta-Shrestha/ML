@@ -1,4 +1,4 @@
-name: Assignment 3 model tests
+name: Assignment 3 CI/CD
 
 on:
   push:
@@ -8,19 +8,33 @@ on:
       - '.github/workflows/a3.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: assignment-3-main
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: Assignment/Assignment 3
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: python -m pytest -q tests
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run model tests
+        run: python -m pytest -q tests
+
   publish:
     needs: test
     if: github.ref == 'refs/heads/main'
@@ -28,16 +42,90 @@ jobs:
     defaults:
       run:
         working-directory: Assignment/Assignment 3
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Log in to Docker Hub
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: echo "$DOCKERHUB_TOKEN" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+        run: |
+          printf '%s' "$DOCKERHUB_TOKEN" |
+            docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+
       - name: Build and publish A3 image
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          docker build -f app/Dockerfile -t "$DOCKERHUB_USERNAME/car-price-a3:latest" .
+          docker build -f app/Dockerfile \
+            -t "$DOCKERHUB_USERNAME/car-price-a3:latest" .
           docker push "$DOCKERHUB_USERNAME/car-price-a3:latest"
+
+  deploy:
+    needs: publish
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.AIT_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.AIT_SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/ait_deployment
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/ait_deployment ~/.ssh/known_hosts
+
+          cat > ~/.ssh/config <<'CONFIG'
+          Host bazooka
+            HostName bazooka.cs.ait.ac.th
+            User st126671
+            IdentityFile ~/.ssh/ait_deployment
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            ConnectTimeout 15
+
+          Host mlserver
+            HostName ml.brain.cs.ait.ac.th
+            User st126671
+            IdentityFile ~/.ssh/ait_deployment
+            IdentitiesOnly yes
+            BatchMode yes
+            StrictHostKeyChecking yes
+            ConnectTimeout 15
+            ProxyJump bazooka
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Deploy and check app
+        run: |
+          ssh mlserver 'bash -se' <<'SCRIPT'
+          docker pull dakiiii/car-price-a3:latest
+
+          if docker container inspect web-st126671-a3 >/dev/null 2>&1; then
+            docker rm -f web-st126671-a3
+          fi
+
+          docker run -d \
+            --name web-st126671-a3 \
+            --restart unless-stopped \
+            -p 127.0.0.1:12671:8050 \
+            dakiiii/car-price-a3:latest
+
+          for attempt in $(seq 1 20); do
+            if curl --noproxy '*' --fail --silent \
+              --max-time 5 http://127.0.0.1:12671/ >/dev/null; then
+              echo "Deployment successful: app responds to HTTP requests."
+              exit 0
+            fi
+            sleep 3
+          done
+
+          docker logs --tail 50 web-st126671-a3
+          exit 1
+          SCRIPT
